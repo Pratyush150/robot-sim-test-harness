@@ -1,0 +1,43 @@
+# Base scenario for the quadrotor point-mass vehicle.
+# Fragments start with '_' and only enter a suite through `extends:`.
+name: _base_air
+description: Outdoor quadrotor base at 5 m AGL. Not run directly.
+
+world:
+  name: open_field
+  min_xy: [-5.0, -15.0]
+  max_xy: [25.0, 15.0]
+  min_z: 0.0
+  max_z: 30.0
+
+robot:
+  type: quadrotor
+  radius: 0.35
+  max_speed: 4.0
+  max_accel: 6.0
+  max_yaw_rate: 2.0
+  actuator_tau: 0.25
+  mass: 1.8
+  battery_wh: 90.0
+  idle_power_w: 140.0
+  drag: 0.45
+  spawn: {x: 0.0, y: 0.0, z: 5.0, yaw: 0.0}
+
+sensors:
+  position_noise_std: 0.03
+  yaw_noise_std: 0.01
+  velocity_noise_std: 0.05
+
+controller:
+  type: goto_goal
+  kp_linear: 1.1
+  kp_angular: 2.0
+  avoid_gain: 1.5
+  avoid_range: 2.5
+
+sim:
+  dt: 0.02
+  time_limit: 45.0
+  seed: 20260101
+  stop_on_goal: true
+  settle_time: 1.0

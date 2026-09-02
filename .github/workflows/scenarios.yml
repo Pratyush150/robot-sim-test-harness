@@ -1,0 +1,113 @@
+name: scenarios
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    name: unit tests (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Run the unit tests
+        run: python -m pytest -q
+
+  scenario-suite:
+    name: scenario suite + baseline comparison
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      # The suite runs against the built-in MockSimulator: no Gazebo, no GPU,
+      # no Unreal binary, nothing to install. That is the point of the
+      # simulator abstraction. A native backend would run on a self-hosted
+      # runner with the same command plus --simulator gazebo.
+      - name: Run the scenario suite
+        run: |
+          simharness suite scenarios/ \
+            --workers 4 \
+            --no-color \
+            --junit  reports/junit.xml \
+            --html   reports/report.html \
+            --json   reports/results.json \
+            --trace-dir reports/traces
+
+      # Fails the build on a regression against the committed baseline:
+      # a scenario that was green and is now red, or a scenario that has
+      # disappeared. Metric drift is reported but advisory; add
+      # --strict-metrics to make a longer path or a slower approach fail too.
+      - name: Compare against the baseline
+        run: |
+          simharness ci scenarios/ \
+            --baseline ci/baseline.json \
+            --tolerances ci/tolerances.yaml \
+            --comparison-json reports/comparison.json \
+            --no-color
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenario-reports
+          path: reports/
+          retention-days: 14
+
+      - name: Publish the JUnit results
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: reports/junit.xml
+          check_name: scenario assertions
+          fail_on_failure: true
+
+  envelope-sweep:
+    name: envelope sweep (nightly-style, advisory)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Monte Carlo over wind and noise
+        run: |
+          simharness sweep scenarios/wind_disturbance.yaml \
+            --range 'disturbance.wind[1]=0:8' \
+            --samples 60 \
+            --seed 1 \
+            --min-pass-rate 0.9 \
+            --json reports/sweep.json
+      - name: Locate the failure boundary
+        run: |
+          simharness sweep scenarios/wind_disturbance.yaml \
+            --boundary 'disturbance.wind[1]' --low 0 --high 14 --tolerance 0.1 \
+            --json reports/boundary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sweep-reports
+          path: reports/

@@ -1,0 +1,38 @@
+extends: _base_air.yaml
+name: wind_disturbance
+description: >
+  Quadrotor holding a 5 m cruise into a steady 2.5 m/s crosswind with a 1.2 m/s
+  gust on top. A proportional controller cannot null a steady disturbance, so
+  this scenario is really asking a different question: is the residual offset
+  small enough, does it settle, and does the vehicle stay inside the corridor.
+  This is the scenario the sweep and boundary examples run against.
+tags: [air, disturbance, sweepable]
+
+goal: {x: 18.0, y: 0.0, z: 5.0, tolerance: 0.6, within: 30.0}
+
+disturbance:
+  wind: [-1.0, 2.5, 0.0]
+  gust_amplitude: 1.2
+  gust_period: 6.0
+  gust_axis: y
+  turbulence_std: 0.15
+
+controller:
+  kp_linear: 1.4
+  kd_linear: 0.05
+
+sim: {time_limit: 45.0, seed: 20260202, settle_time: 1.5}
+
+assertions:
+  - {type: reached_goal, name: arrives_on_time}
+  - {type: geofence, name: stays_in_corridor, min_xy: [-6.0, -6.0], max_xy: [22.0, 6.0],
+     min_z: 3.0, max_z: 8.0}
+  - {type: max_velocity, name: speed_limit, limit: 4.2}
+  - {type: max_acceleration, name: accel_limit, limit: 7.0}
+  - {type: energy_budget, name: energy, max_wh: 2.5}
+  - {type: always, name: holds_altitude,
+     predicate: {all: [{signal: z, op: ">=", value: 4.0}, {signal: z, op: "<=", value: 6.0}]}}
+  - {type: eventually_always, name: converges_and_stays, settle_by: 30.0,
+     predicate: {signal: distance_to_goal, op: "<=", value: 1.0}}
+  - {type: no_oscillation, name: no_lateral_hunting, signal: y, max_frequency: 0.8,
+     min_amplitude: 0.15, after: 2.0}

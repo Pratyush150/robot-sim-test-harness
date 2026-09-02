@@ -1,0 +1,39 @@
+extends: _base_air.yaml
+name: waypoint_mission
+description: >
+  Four-leg survey box with a deliberately tight 42 s budget and a hard energy
+  cap. Waypoints are retired on the *estimate*, not on ground truth, so
+  estimator drift can make the vehicle cut a corner and still believe it hit
+  the waypoint.
+tags: [air, mission, timing]
+
+robot:
+  spawn: {x: 0.0, y: 0.0, z: 5.0, yaw: 0.0}
+
+goal: {x: 0.0, y: -4.0, z: 5.0, tolerance: 0.7, within: 42.0}
+
+controller:
+  type: waypoint_mission
+  kp_linear: 1.3
+  waypoint_tolerance: 0.8
+  waypoints:
+    - [14.0, 0.0, 5.0]
+    - [14.0, 9.0, 6.0]
+    - [2.0, 9.0, 6.0]
+    - [2.0, 2.0, 5.0]
+
+sim: {time_limit: 50.0, seed: 20260303, settle_time: 1.0}
+
+assertions:
+  - {type: reached_goal, name: closes_the_loop_in_time, after: 5.0}
+  - {type: geofence, name: stays_in_world}
+  - {type: max_velocity, name: speed_limit, limit: 4.2}
+  - {type: energy_budget, name: energy, max_wh: 2.2}
+  - {type: path_length, name: flies_the_planned_box, optimal: 48.0, max_ratio: 1.15}
+  - {type: always, name: stays_above_min_alt,
+     predicate: {signal: z, op: ">=", value: 4.0}}
+  - {type: eventually, name: reaches_far_corner, within: 25.0,
+     predicate: {all: [{signal: x, op: ">=", value: 13.0}, {signal: y, op: ">=", value: 8.0}]}}
+  - {type: until, name: altitude_held_until_landing_leg, within: 42.0,
+     condition: {signal: z, op: ">=", value: 4.5},
+     release: {signal: distance_to_goal, op: "<=", value: 0.7}}

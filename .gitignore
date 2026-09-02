@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.venv/
+venv/
+env/
+
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Harness output. Baselines under ci/ ARE committed; run artifacts are not.
+reports/
+out/
+*.trace.json
+*.trace.csv
+!ci/baseline.json
+
+.idea/
+.vscode/
+*.swp
+.DS_Store

@@ -1,0 +1,40 @@
+extends: _base_ground.yaml
+name: sensor_dropout
+description: >
+  The position fix drops out roughly every few seconds for 0.8 s at a time.
+  The controller has to dead-reckon through the gap on its own commanded
+  velocity, which drifts. Tests that the vehicle still arrives, still clears
+  the obstacles, and that the estimate error stays bounded rather than
+  diverging across successive dropouts.
+tags: [ground, estimation, degraded]
+
+goal: {x: 12.0, y: 0.0, tolerance: 0.45, within: 32.0}
+
+obstacles:
+  - {id: crate, shape: box, x: 5.0, y: 0.9, size_x: 1.4, size_y: 1.4}
+  - {id: drum, shape: circle, x: 8.5, y: -0.7, radius: 0.5}
+
+sensors:
+  position_noise_std: 0.02
+  yaw_noise_std: 0.01
+  dropout_probability: 0.004
+  dropout_duration: 0.8
+  latency: 0.06
+
+sim: {time_limit: 40.0, seed: 20260404}
+
+assertions:
+  - {type: reached_goal, name: arrives_despite_dropouts}
+  - {type: no_collision}
+  - {type: min_clearance, name: keeps_clearance_while_blind, threshold: 0.08}
+  - {type: geofence, name: stays_in_world}
+  - {type: eventually, name: dropouts_actually_happened,
+     predicate: {signal: sensor_valid, op: "<=", value: 0.0}}
+  - {type: always, name: estimate_error_stays_bounded,
+     predicate: {signal: estimate_error, op: "<=", value: 1.25}}
+  - {type: eventually_always, name: estimate_snaps_back, settle_by: 32.0,
+     predicate: {signal: estimate_error, op: "<=", value: 0.2}}
+  - {type: eventually, name: gets_there, within: 32.0,
+     predicate: {signal: distance_to_goal, op: "<=", value: 0.45}}
+  - {type: eventually_always, name: recovers_and_stays, settle_by: 32.0,
+     predicate: {signal: distance_to_goal, op: "<=", value: 0.6}}

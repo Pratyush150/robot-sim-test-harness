@@ -1,0 +1,44 @@
+# Base scenario for the differential-drive ground robot.
+# Fragments start with '_' and are skipped by directory loading; they only
+# enter a suite through `extends:`.
+name: _base_ground
+description: Warehouse-floor differential-drive base. Not run directly.
+
+world:
+  name: warehouse_floor
+  min_xy: [-3.0, -8.0]
+  max_xy: [16.0, 8.0]
+  min_z: -0.5
+  max_z: 2.0
+
+robot:
+  type: diff_drive
+  radius: 0.25
+  max_speed: 1.2
+  max_accel: 1.5
+  max_yaw_rate: 2.5
+  actuator_tau: 0.15
+  mass: 12.0
+  battery_wh: 60.0
+  idle_power_w: 4.0
+  drag: 0.15
+  spawn: {x: 0.0, y: 0.0, z: 0.0, yaw: 0.0}
+
+sensors:
+  position_noise_std: 0.01
+  yaw_noise_std: 0.005
+  velocity_noise_std: 0.02
+
+controller:
+  type: goto_goal
+  kp_linear: 0.9
+  kp_angular: 3.0
+  avoid_gain: 1.1
+  avoid_range: 1.2
+
+sim:
+  dt: 0.02
+  time_limit: 40.0
+  seed: 20260101
+  stop_on_goal: true
+  settle_time: 0.5

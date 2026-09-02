@@ -1,0 +1,15 @@
+# Runtime dependency. That is the whole list.
+PyYAML>=5.4
+
+# Development / test only:
+#   pytest>=7.0
+#
+# Deliberately absent: numpy, matplotlib, pandas. The simulator, the
+# assertions and the SVG plots are pure Python, so the harness installs and
+# runs in a bare CI container in seconds.
+#
+# Simulator backends are optional and guarded. Install whichever you actually
+# use; none of them are needed for the built-in MockSimulator:
+#   Gazebo Harmonic/Garden -> python-gz-transport bindings, from the simulator install
+#   AirSim / Colosseum     -> pip install airsim   (or the Colosseum fork)
+#   Isaac Sim              -> not pip-installable; run under its own python.sh

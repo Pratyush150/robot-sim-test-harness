@@ -1,0 +1,225 @@
+{
+  "format": "simharness-baseline/1",
+  "note": "initial baseline, MockSimulator",
+  "recorded_at": 1788345077.3162332,
+  "scenarios": {
+    "approach_damping": {
+      "assertions": {
+        "arrives_on_time": true,
+        "energy": true,
+        "jerk_limit": true,
+        "no_hunting": true,
+        "overshoot_bounded": true,
+        "settles_quickly": true,
+        "speed_limit": true,
+        "stays_parked": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 1.183768,
+        "final_distance_to_goal_m": 0.13415,
+        "max_speed_mps": 3.580814,
+        "path_length_m": 14.86587,
+        "sim_time_s": 30.0,
+        "steps": 1501.0,
+        "time_to_goal_s": 5.2
+      },
+      "seed": 20260606,
+      "status": "pass"
+    },
+    "expected_failure_no_avoidance": {
+      "assertions": {
+        "arrives_on_time": true,
+        "keeps_its_distance": false,
+        "never_touches": false,
+        "no_collision": false
+      },
+      "expect_failure": true,
+      "metrics": {
+        "energy_wh": 0.023883,
+        "final_distance_to_goal_m": 0.113254,
+        "max_speed_mps": 1.2,
+        "min_clearance_m": -0.449871,
+        "path_length_m": 11.886778,
+        "sim_time_s": 10.82,
+        "steps": 542.0,
+        "time_to_goal_s": 10.3
+      },
+      "seed": 20260505,
+      "status": "expected_failure"
+    },
+    "moving_obstacle_crossing": {
+      "assertions": {
+        "arrives_on_time": true,
+        "never_penetrates": true,
+        "no_collision": true,
+        "safe_until_arrival": true,
+        "speed_limit": true,
+        "stays_in_world": true,
+        "yields_to_the_crosser": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.053354,
+        "final_distance_to_goal_m": 0.171191,
+        "max_speed_mps": 1.2,
+        "min_clearance_m": 0.277257,
+        "path_length_m": 14.343835,
+        "sim_time_s": 13.34,
+        "steps": 668.0,
+        "time_to_goal_s": 12.82
+      },
+      "seed": 20260101,
+      "status": "pass"
+    },
+    "narrow_corridor": {
+      "assertions": {
+        "clearance_held_until_arrival": true,
+        "does_not_scrape": true,
+        "does_not_wander": true,
+        "gets_through": true,
+        "no_collision": true,
+        "stays_in_world": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.024455,
+        "final_distance_to_goal_m": 0.170106,
+        "max_speed_mps": 1.2,
+        "min_clearance_m": 0.449597,
+        "path_length_m": 11.829942,
+        "sim_time_s": 11.26,
+        "steps": 564.0,
+        "time_to_goal_s": 10.74
+      },
+      "seed": 20260101,
+      "status": "pass"
+    },
+    "obstacle_slalom": {
+      "assertions": {
+        "arrives_on_time": true,
+        "detour_is_bounded": true,
+        "gets_there": true,
+        "keeps_its_distance": true,
+        "never_touches": true,
+        "no_collision": true,
+        "speed_limit": true,
+        "stays_in_world": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.050369,
+        "final_distance_to_goal_m": 0.168293,
+        "max_speed_mps": 1.2,
+        "min_clearance_m": 0.206358,
+        "path_length_m": 13.201721,
+        "sim_time_s": 12.4,
+        "steps": 621.0,
+        "time_to_goal_s": 11.88
+      },
+      "seed": 20260101,
+      "status": "pass"
+    },
+    "sensor_dropout": {
+      "assertions": {
+        "arrives_despite_dropouts": true,
+        "dropouts_actually_happened": true,
+        "estimate_error_stays_bounded": true,
+        "estimate_snaps_back": true,
+        "gets_there": true,
+        "keeps_clearance_while_blind": true,
+        "no_collision": true,
+        "recovers_and_stays": true,
+        "stays_in_world": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.050561,
+        "final_distance_to_goal_m": 0.240969,
+        "max_speed_mps": 1.2,
+        "min_clearance_m": 0.16391,
+        "path_length_m": 13.745366,
+        "sim_time_s": 12.46,
+        "steps": 624.0,
+        "time_to_goal_s": 11.94
+      },
+      "seed": 20260404,
+      "status": "pass"
+    },
+    "straight_line": {
+      "assertions": {
+        "accel_limit": true,
+        "arrives_on_time": true,
+        "energy": true,
+        "gets_there": true,
+        "never_speeds": true,
+        "no_collision": true,
+        "settles_on_goal": true,
+        "speed_limit": true,
+        "stays_in_world": true,
+        "takes_a_direct_route": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.02441,
+        "final_distance_to_goal_m": 0.143168,
+        "max_speed_mps": 1.2,
+        "path_length_m": 11.856849,
+        "sim_time_s": 11.42,
+        "steps": 572.0,
+        "time_to_goal_s": 10.9
+      },
+      "seed": 20260101,
+      "status": "pass"
+    },
+    "waypoint_mission": {
+      "assertions": {
+        "altitude_held_until_landing_leg": true,
+        "closes_the_loop_in_time": true,
+        "energy": true,
+        "flies_the_planned_box": true,
+        "reaches_far_corner": true,
+        "speed_limit": true,
+        "stays_above_min_alt": true,
+        "stays_in_world": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.709961,
+        "final_distance_to_goal_m": 0.207695,
+        "max_speed_mps": 3.580734,
+        "path_length_m": 46.46056,
+        "sim_time_s": 16.56,
+        "steps": 829.0,
+        "time_to_goal_s": 15.54
+      },
+      "seed": 20260303,
+      "status": "pass"
+    },
+    "wind_disturbance": {
+      "assertions": {
+        "accel_limit": true,
+        "arrives_on_time": true,
+        "converges_and_stays": true,
+        "energy": true,
+        "holds_altitude": true,
+        "no_lateral_hunting": true,
+        "speed_limit": true,
+        "stays_in_corridor": true
+      },
+      "expect_failure": false,
+      "metrics": {
+        "energy_wh": 0.304983,
+        "final_distance_to_goal_m": 0.346377,
+        "max_speed_mps": 3.487173,
+        "path_length_m": 17.989112,
+        "sim_time_s": 7.32,
+        "steps": 367.0,
+        "time_to_goal_s": 5.8
+      },
+      "seed": 20260202,
+      "status": "pass"
+    }
+  },
+  "simulator": "mock"
+}

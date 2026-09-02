@@ -1,0 +1,17 @@
+# Per-metric drift tolerances used by `simharness ci`.
+#
+# A metric is within tolerance if it is inside EITHER band. The absolute band
+# exists because small numbers make relative comparisons meaningless
+# (0.001 -> 0.002 is "+100%" and means nothing); the relative band exists
+# because large ones make absolute comparisons meaningless.
+#
+# Drift is advisory by default and shows up in the CI log. Pass
+# --strict-metrics to make it fail the build.
+
+path_length_m:            {abs: 0.05, rel: 0.03}
+time_to_goal_s:           {abs: 0.10, rel: 0.03}
+final_distance_to_goal_m: {abs: 0.05, rel: 0.20}
+min_clearance_m:          {abs: 0.02, rel: 0.08}
+max_speed_mps:            {abs: 0.05, rel: 0.03}
+energy_wh:                {abs: 0.002, rel: 0.05}
+sim_time_s:               {abs: 0.10, rel: 0.03}

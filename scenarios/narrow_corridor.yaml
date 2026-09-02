@@ -1,0 +1,33 @@
+extends: _base_ground.yaml
+name: narrow_corridor
+description: >
+  A 1.4 m gap between two walls, for a 0.5 m diameter robot. This is the
+  scenario that separates an avoidance term that works from one that is merely
+  tuned: too much repulsion and the vehicle stalls at the mouth of the gap,
+  too little and it clips a wall.
+tags: [avoidance, ground, tight]
+
+robot:
+  spawn: {x: 0.0, y: 0.0, yaw: 0.0}
+
+goal: {x: 12.0, y: 0.0, tolerance: 0.3, within: 32.0}
+
+obstacles:
+  - {id: wall_left, shape: box, x: 6.0, y: 2.2, size_x: 1.0, size_y: 3.0}
+  - {id: wall_right, shape: box, x: 6.0, y: -2.2, size_x: 1.0, size_y: 3.0}
+
+controller:
+  avoid_gain: 0.7
+  avoid_range: 0.9
+
+sim: {time_limit: 40.0}
+
+assertions:
+  - {type: reached_goal, name: gets_through}
+  - {type: no_collision}
+  - {type: min_clearance, name: does_not_scrape, threshold: 0.05}
+  - {type: geofence, name: stays_in_world}
+  - {type: path_length, name: does_not_wander, max_ratio: 1.25}
+  - {type: until, name: clearance_held_until_arrival, within: 32.0,
+     condition: {signal: clearance, op: ">", value: 0.05},
+     release: {signal: distance_to_goal, op: "<=", value: 0.3}}

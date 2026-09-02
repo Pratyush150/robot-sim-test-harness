@@ -1,0 +1,28 @@
+extends: obstacle_slalom.yaml
+name: expected_failure_no_avoidance
+description: >
+  The same slalom, with the avoidance term switched off (avoid_gain: 0) and the
+  approach speed raised. The vehicle drives straight into pillar_a.
+
+  This scenario is expected to fail, and the suite is green only while it does.
+  It is the harness testing itself: if a refactor accidentally makes collision
+  detection stop firing, or makes the clearance assertion always pass, every
+  other scenario stays green and this one flips to XPASS, which fails the
+  build. A regression suite that can only ever go green is not measuring
+  anything.
+tags: [negative, avoidance, ground]
+
+expect_failure: true
+
+controller:
+  avoid_gain: 0.0
+  kp_linear: 1.4
+
+sim: {seed: 20260505}
+
+assertions:
+  - {type: no_collision, name: no_collision}
+  - {type: min_clearance, name: keeps_its_distance, threshold: 0.10}
+  - {type: always, name: never_touches,
+     predicate: {signal: clearance, op: ">", value: 0.0}}
+  - {type: reached_goal, name: arrives_on_time}

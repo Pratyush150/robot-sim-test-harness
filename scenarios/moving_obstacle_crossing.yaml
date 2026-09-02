@@ -1,0 +1,33 @@
+extends: _base_ground.yaml
+name: moving_obstacle_crossing
+description: >
+  A second vehicle crosses the path from the right at 0.55 m/s, timed to arrive
+  at the crossing point at roughly the same moment as the robot. Static
+  avoidance tuning is not enough here: the obstacle is somewhere else by the
+  time you get there.
+tags: [avoidance, ground, dynamic]
+
+goal: {x: 12.0, y: 0.0, tolerance: 0.3, within: 32.0}
+
+obstacles:
+  - id: crosser
+    shape: circle
+    x: 6.0
+    y: -3.2
+    radius: 0.45
+    motion: {type: linear, vy: 0.55}
+  - {id: parked, shape: box, x: 9.0, y: 1.6, size_x: 1.2, size_y: 1.2}
+
+sim: {time_limit: 40.0}
+
+assertions:
+  - {type: reached_goal, name: arrives_on_time}
+  - {type: no_collision}
+  - {type: min_clearance, name: yields_to_the_crosser, threshold: 0.08}
+  - {type: geofence, name: stays_in_world}
+  - {type: max_velocity, name: speed_limit, limit: 1.25}
+  - {type: never, name: never_penetrates,
+     predicate: {signal: clearance, op: "<", value: 0.0}}
+  - {type: until, name: safe_until_arrival, within: 32.0,
+     condition: {signal: clearance, op: ">=", value: 0.08},
+     release: {signal: distance_to_goal, op: "<=", value: 0.3}}

@@ -1,0 +1,24 @@
+extends: _base_ground.yaml
+name: straight_line
+description: >
+  The control case. Empty floor, one goal 12 m away. If this scenario ever
+  fails, the failure is in the harness or the vehicle model, not in the
+  planner, which is exactly why it is worth having.
+tags: [smoke, ground]
+
+goal: {x: 12.0, y: 0.0, tolerance: 0.25, within: 20.0}
+
+assertions:
+  - {type: reached_goal, name: arrives_on_time}
+  - {type: no_collision}
+  - {type: geofence, name: stays_in_world}
+  - {type: max_velocity, name: speed_limit, limit: 1.25}
+  - {type: max_acceleration, name: accel_limit, limit: 2.0}
+  - {type: path_length, name: takes_a_direct_route, max_ratio: 1.05}
+  - {type: energy_budget, name: energy, max_wh: 1.0}
+  - {type: settling_time, name: settles_on_goal, signal: distance_to_goal,
+     target: 0.0, band: 0.3, limit: 20.0}
+  - {type: always, name: never_speeds,
+     predicate: {signal: speed, op: "<=", value: 1.25}}
+  - {type: eventually, name: gets_there, within: 20.0,
+     predicate: {signal: distance_to_goal, op: "<=", value: 0.25}}

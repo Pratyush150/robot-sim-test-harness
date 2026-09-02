@@ -1,0 +1,29 @@
+extends: _base_ground.yaml
+name: obstacle_slalom
+description: >
+  Three pillars staggered either side of the straight line to the goal. Tests
+  that the avoidance term actually deflects the vehicle instead of grazing the
+  obstacles, and that the detour it takes is bounded rather than a tour of the
+  building.
+tags: [avoidance, ground]
+
+goal: {x: 12.0, y: 0.0, tolerance: 0.3, within: 30.0}
+
+obstacles:
+  - {id: pillar_a, shape: circle, x: 3.0, y: 0.35, radius: 0.5}
+  - {id: pillar_b, shape: circle, x: 6.5, y: -0.45, radius: 0.5}
+  - {id: pillar_c, shape: circle, x: 9.5, y: 0.30, radius: 0.5}
+
+sim: {time_limit: 40.0}
+
+assertions:
+  - {type: reached_goal, name: arrives_on_time}
+  - {type: no_collision}
+  - {type: min_clearance, name: keeps_its_distance, threshold: 0.10}
+  - {type: geofence, name: stays_in_world}
+  - {type: max_velocity, name: speed_limit, limit: 1.25}
+  - {type: path_length, name: detour_is_bounded, max_ratio: 1.35}
+  - {type: always, name: never_touches,
+     predicate: {signal: clearance, op: ">", value: 0.0}}
+  - {type: eventually, name: gets_there, within: 30.0,
+     predicate: {signal: distance_to_goal, op: "<=", value: 0.3}}
